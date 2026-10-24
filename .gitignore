@@ -1,0 +1,26 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.coverage
+.idea/
+.vscode/
+.DS_Store
+# Local experiment outputs (publish selected results only after reviewing them)
+results/
+
+# Secrets and machine-specific files (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.log
+
+# OS / notebook caches
+.ipynb_checkpoints/
+Thumbs.db
