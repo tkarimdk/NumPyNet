@@ -63,3 +63,7 @@ Do not claim this demonstrates generalization, novelty, or a causal explanation.
 We deliberately start with the unstable LR=10 setting (seeds 7, 8, 9). Gradient clipping (max norm 0.3) and monotonic backtracking (up to eight retries) both reach 100% training accuracy in all three runs, whereas the chosen decay schedule helps seed 8 but not seeds 7 and 9. Measured values and limitations are in `docs/lesson-04.md`. This is a reproducible educational result, not evidence of superior generalization.
 
 **Write in your own words:** Why can clipping help even when it doesn't guarantee a loss decrease? Why should you count candidate evaluations when comparing backtracking to plain SGD?
+
+## v0.5.0 — Three-class networks
+
+The experiment was expanded beyond XOR to a three-class synthetic spiral task with a separate, same-distribution holdout. Implementing stable Softmax and fused logits-based cross-entropy showed why directly computing `log(softmax(logits))` is avoidable. Numerical checks against 27 weights and biases verified the full multiclass derivative pipeline. Validation measurements were kept separate from gradient updates. The synthetic data is not a realistic benchmark, so evaluating on actual external data is a future milestone.

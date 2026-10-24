@@ -10,6 +10,8 @@ from .diagnostics import diagnose_xor, write_steps_csv, write_diagnostic_summary
 from .experiments import XOR_INPUTS, XOR_TARGETS, make_xor_model, train_xor
 from .gradcheck import check_gradients
 from .lessons import trace_single_neuron
+from .multiclass import make_multiclass_model, spiral_dataset, train_multiclass, check_multiclass_gradients
+from .multiclass_reports import write_multiclass_csv, write_multiclass_svg
 from .reports import write_comparison_csv, write_history_csv, write_loss_svg
 from .stability import MODES, StabilityConfig, run_stability, write_stability_steps, write_stability_summary
 
@@ -70,9 +72,62 @@ def main() -> None:
     stability_parser.add_argument("--max-backtracks", type=int, default=8)
     stability_parser.add_argument("--out-dir", type=Path, default=Path("results/stability"))
 
+    multiclass_parser = subcommands.add_parser(
+        "train-multiclass", help="Train a 3-class network with independent synthetic holdout data"
+    )
+    multiclass_parser.add_argument("--epochs", type=int, default=1200)
+    multiclass_parser.add_argument("--lr", type=float, default=0.7)
+    multiclass_parser.add_argument("--seed", type=int, default=7)
+    multiclass_parser.add_argument("--width", type=int, default=24)
+    multiclass_parser.add_argument("--noise", type=float, default=0.18)
+    multiclass_parser.add_argument("--train-per-class", type=int, default=100)
+    multiclass_parser.add_argument("--val-per-class", type=int, default=60)
+    multiclass_parser.add_argument("--out-dir", type=Path, default=Path("results/multiclass"))
+
+    mcheck_parser = subcommands.add_parser(
+        "check-multiclass-gradients", help="Finite-difference check of logits-based cross-entropy"
+    )
+    mcheck_parser.add_argument("--seed", type=int, default=7)
+    mcheck_parser.add_argument("--epsilon", type=float, default=1e-5)
+
     arguments = parser.parse_args()
 
-    if arguments.command == "trace-neuron":
+    if arguments.command == "check-multiclass-gradients":
+        inputs, targets = spiral_dataset(samples_per_class=3, noise=0.1, seed=arguments.seed + 1000)
+        model = make_multiclass_model(arguments.seed, hidden_width=4)
+        report = check_multiclass_gradients(model, inputs, targets, epsilon=arguments.epsilon)
+        print(f"NumPyNet v{__version__} | multiclass gradient check")
+        for row in report.checks:
+            print(f"{'PASS' if row.passed else 'FAIL'} | layer {row.layer} {row.parameter}: "
+                  f"{row.count} parameters, max absolute error={row.max_absolute_error:.3g}")
+        print(f"Checked {report.checked_parameters} parameters: "
+              f"{'ALL PASS' if report.passed else 'MISMATCHES FOUND'}")
+        if not report.passed:
+            raise SystemExit(1)
+
+    elif arguments.command == "train-multiclass":
+        try:
+            result = train_multiclass(
+                epochs=arguments.epochs, learning_rate=arguments.lr, seed=arguments.seed,
+                train_per_class=arguments.train_per_class,
+                validation_per_class=arguments.val_per_class,
+                noise=arguments.noise, hidden_width=arguments.width,
+            )
+        except ValueError as error:
+            parser.error(str(error))
+        before, after = result.history[0], result.history[-1]
+        csv = write_multiclass_csv(arguments.out_dir / "history.csv", result.history)
+        svg = write_multiclass_svg(arguments.out_dir / "loss_curves.svg", result.history)
+        print(f"NumPyNet v{__version__} | 2 -> {arguments.width} -> 3 synthetic spiral")
+        print(f"Initial: train loss {before.train_loss:.6f}, validation loss {before.validation_loss:.6f}")
+        print(f"Final:   train loss {after.train_loss:.6f}, validation loss {after.validation_loss:.6f}")
+        print(f"Accuracy: train {after.train_accuracy:.1%}, validation {after.validation_accuracy:.1%}")
+        print("Validation uses separately generated same-distribution synthetic points.")
+        print("This is a toy experiment, not a real-world generalization benchmark.")
+        print(f"History CSV: {csv}")
+        print(f"Loss SVG:    {svg}")
+
+    elif arguments.command == "trace-neuron":
         trace = trace_single_neuron(learning_rate=arguments.lr)
         print(f"NumPyNet v{__version__} | Lesson 01: one neuron, one update")
         print(f"Inputs x:          {trace.inputs.tolist()}")

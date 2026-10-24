@@ -42,11 +42,6 @@ class ReportingTests(unittest.TestCase):
             self.assertEqual(len(rows), 2)
             self.assertAlmostEqual(float(rows[0]["initial_loss"]), float(rows[1]["initial_loss"]))
 
-    def test_reject_empty_svg_input(self) -> None:
-        with TemporaryDirectory() as directory:
-            with self.assertRaises(ValueError):
-                write_loss_svg(Path(directory) / "plot.svg", [])
-
     def test_svg_preserves_labels_with_xml_characters(self) -> None:
         history = train_xor(epochs=2).history
         label = "clip & decay <baseline>"
@@ -54,6 +49,11 @@ class ReportingTests(unittest.TestCase):
             plot = write_loss_svg(Path(directory) / "plot.svg", [(label, history)])
             root = ET.parse(plot).getroot()
             self.assertIn(label, [node.text for node in root.iter()])
+
+    def test_reject_empty_svg_input(self) -> None:
+        with TemporaryDirectory() as directory:
+            with self.assertRaises(ValueError):
+                write_loss_svg(Path(directory) / "plot.svg", [])
 
 
 if __name__ == "__main__":

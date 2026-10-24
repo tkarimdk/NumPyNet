@@ -9,7 +9,7 @@ Development follows working, testable milestones. Release dates depend on implem
 | v0.2 | Numerical gradient checker, CSV metrics, learning-rate visualizations | Validate derivatives and compare optimization under controls | Complete |
 | v0.3 | Learning-rate diagnostics, per-update CSV logs and three-seed comparison | Interpret gradient norms, step sizes, loss spikes and saturation | Complete |
 | v0.4 | Gradient clipping, learning-rate decay and backtracking | Test whether stability interventions improve controlled failures | Complete |
-| v0.5 | ReLU, softmax, multiclass cross-entropy | Stable classification and derivative contracts | Planned |
+| v0.5 | ReLU, softmax, logits-based multiclass cross-entropy, synthetic validation | Stable classification and derivative contracts | Complete |
 | v0.6 | Mini-batching, momentum, Adam | Different optimization methods | Planned |
 | v0.7 | Stable logits-based BCE and broader experiments on real data | Numerical stability, variation, selection bias, overfitting | Planned |
 | v0.8 | Save/load model parameters and CLI inference | Reproducibility and usable inference | Planned |

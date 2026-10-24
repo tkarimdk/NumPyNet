@@ -1,3 +1,3 @@
-"""NumPyNet: small, explainable neural networks built without autograd."""
+"""NumPyNet: inspectable neural networks with manual backpropagation."""
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

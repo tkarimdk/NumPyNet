@@ -103,7 +103,7 @@ def write_loss_svg(path: str | Path, results: list[tuple[float | str, list[Epoch
         svg.append(f'<polyline points="{points}" stroke="{color}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>')
         legend_x = 500 + (i % 3) * 144
         legend_y = 19 + (i // 3) * 17
-        label = escape(rate if isinstance(rate, str) else f"η={rate:g}")
+        label = escape(rate if isinstance(rate, str) else f"rate={rate:g}")
         svg.append(f'<line x1="{legend_x}" x2="{legend_x+20}" y1="{legend_y}" y2="{legend_y}" stroke="{color}" stroke-width="3"/>')
         svg.append(f'<text x="{legend_x+25}" y="{legend_y+4}" font-family="Arial,sans-serif" font-size="12" fill="#334155">{label}</text>')
     svg.append('</svg>')

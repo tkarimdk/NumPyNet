@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.0 — Three-class classification
+
+- Added stable Softmax and its explicit Jacobian-vector derivative and ReLU activation.
+- Added fused logits-based multiclass cross-entropy and direct class-logit gradients.
+- Added seeded synthetic spiral training with separately generated validation data.
+- Added 27-parameter numerical gradient verification, train/validation CSVs, and a browser-viewable SVG.
+- Added CLI commands `train-multiclass` and `check-multiclass-gradients`.
+- Added 16 tests; preserved 48 existing tests from the published v0.4.0 repository.
+- Documented synthetic evaluation limits and learning exercises.
+
+
 ## v0.4.0 — Lesson 04: stability interventions
 
 - Added global L2 gradient clipping across all Dense parameters, including gradients for biases.

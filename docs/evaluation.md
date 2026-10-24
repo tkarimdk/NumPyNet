@@ -1,25 +1,15 @@
-# Evaluation - 2026-10-24
+# Evaluation history
 
-Evaluated locally on Windows with Python 3.13.5 and NumPy 2.5.4.
+## v0.4.0 — 2026-10-24
 
-## Results
+Published GitHub Actions run on Python 3.12 passed 48 tests, including a console encoding regression and a valid-SVG-label regression. The fixed-seed XOR experiment reached 100% training accuracy on its four examples; this is not a generalization estimate.
 
-- Editable installation and `pip check` passed.
-- All 48 unit tests passed, including two regression tests added during review.
-- Numerical checking passed for all 17 network parameters; maximum absolute error was approximately 1.23e-11.
-- Default XOR training (seed 7, 5,000 updates, learning rate 0.7) reduced loss from 0.704652 to 0.000601 and reached 100% training accuracy.
-- All six documented CLI commands completed successfully after the console fix.
-- Stability experiments used learning rate 10, 2,000 updates, and seeds 7, 8, 9. Baseline accuracy was 50%, 75%, 50%; clipping and backtracking each reached 100% for all three seeds. Decay reached 75%, 100%, 50%. Backtracking recorded zero loss-increasing steps and 23, 29, 41 extra trials respectively.
+## v0.5.0 — local verification
 
-## Fixes from review
+- 64 automated tests passed in the development environment, including all 48 prior tests.
+- A 2–4–3 multiclass network passed numerical checking for 27 parameters.
+- The default 2–24–3 model trained successfully on 300 synthetic training examples and was evaluated on 180 separately generated synthetic validation examples.
+- For seed 7 and 1,200 updates, both training and validation accuracy were 100%. This is a synthetic toy task, not a production accuracy claim.
+- XML parsing tests validated SVG output, and the CLI produced CSV and SVG artifacts.
 
-- Replaced the Greek delta in gradient-check console output with ASCII text. The original command failed with UnicodeEncodeError under Windows cp1252 output. A subprocess regression test now exercises that encoding.
-- Escaped SVG legend labels so ampersands and angle brackets produce valid XML. A regression test parses the resulting SVG and verifies the label is preserved.
-
-## Assessment and limits
-
-The project is a coherent educational implementation: explicit backpropagation, deterministic experiments, gradient checks, and useful optimization diagnostics. These checks support correctness for the tested small-network workloads.
-
-All reported accuracy comes from four XOR training points, so these experiments do not measure generalization. The separate sigmoid and clipped BCE implementation has approximate gradient behavior at clipped extremes, as already documented in the mathematical notes. Backtracking uses additional loss evaluations, so equal update budgets do not mean equal compute. CI currently covers Python 3.12 on Ubuntu; this local evaluation does not establish compatibility across the entire advertised Python/NumPy range. No license is included; this review does not change the licensing policy.
-
-Generated experiment outputs remain in the ignored `results/` directory. GitHub Actions must be checked after publication.
+Validation of the new version on the GitHub Actions runner must be repeated after publication. This repository does not yet include a real-world multiclass benchmark.
